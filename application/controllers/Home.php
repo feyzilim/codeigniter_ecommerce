@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+defined('BASEPATH') || exit('No direct script access allowed');
 
 class Home extends CI_Controller
 {
@@ -12,7 +12,7 @@ class Home extends CI_Controller
         $this->userData = $this->session->userdata();
     }
 
-    public function index($category_id = 0)
+    public function index($categoryId = 0)
     {
         $viewData = [];
         $search = $this->input->get('search');
@@ -23,14 +23,14 @@ class Home extends CI_Controller
         if ($search) {
             $where['title LIKE'] = '%' . $search . '%';
         }
-        if ($category_id) {
-            $where['category_id'] = (int)$category_id;
+        if ($categoryId) {
+            $where['category_id'] = (int)$categoryId;
         }
 
         $viewData['items'] = $this->db->where($where)->limit($limit, $start)->get('items')->result();
 
         $this->pagination->initialize([
-            'base_url' => base_url() . ($category_id ? 'category/' . $category_id : '') . ($search ? '?search=' . $search : ''),
+            'base_url' => base_url() . ($categoryId ? 'category/' . $categoryId : '') . ($search ? '?search=' . $search : ''),
             'total_rows' => $this->db->where($where)->count_all_results('items')
         ]);
         $viewData['pagination'] = $this->pagination->create_links();
@@ -39,17 +39,17 @@ class Home extends CI_Controller
         $this->render('home', $viewData);
     }
 
-    public function add_cart($item_id)
+    public function add_cart($itemId)
     {
         if (!isset($this->userData['logged'])) {
             $this->add_alert('warning', 'You must login firstly.');
             redirect(base_url('login'));
         } else {
-            $item = $this->db->where('id', $item_id)->get('items')->row();
+            $item = $this->db->where('id', $itemId)->get('items')->row();
             if (!is_object($item)) {
                 show_404();
             }
-            $this->userData['cart'][] = $item_id;
+            $this->userData['cart'][] = $itemId;
             $this->session->set_userdata('cart', $this->userData['cart']);
             $this->add_alert('success', 'Product successful added to cart');
             redirect(base_url('cart'));
@@ -71,8 +71,8 @@ class Home extends CI_Controller
         }
 
         $data = ['total' => 0];
-        foreach ($this->userData['cart'] as $key => $item_id) {
-            $item = $this->db->where('id', $item_id)->get('items')->row();
+        foreach ($this->userData['cart'] as $key => $itemId) {
+            $item = $this->db->where('id', $itemId)->get('items')->row();
             $data['items'][$key] = $item;
             $data['total'] += $item->price;
         }
