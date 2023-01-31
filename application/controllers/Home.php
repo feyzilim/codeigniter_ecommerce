@@ -79,11 +79,6 @@ class Home extends CI_Controller
         $this->render('cart', $data);
     }
 
-    public function checkout()
-    {
-
-    }
-
     public function logout()
     {
         $this->session->unset_userdata([
