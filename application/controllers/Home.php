@@ -29,8 +29,12 @@ class Home extends CI_Controller
 
         $viewData['items'] = $this->db->where($where)->limit($limit, $start)->get('items')->result();
 
+        $paginationUrl = base_url();
+        $paginationUrl .= $categoryId ? 'category/' . $categoryId : '';
+        $paginationUrl .= $search ? '?search=' . $search : '';
+
         $this->pagination->initialize([
-            'base_url' => base_url() . ($categoryId ? 'category/' . $categoryId : '') . ($search ? '?search=' . $search : ''),
+            'base_url' => $paginationUrl,
             'total_rows' => $this->db->where($where)->count_all_results('items')
         ]);
         $viewData['pagination'] = $this->pagination->create_links();
@@ -42,7 +46,7 @@ class Home extends CI_Controller
     public function add_cart($itemId)
     {
         if (!isset($this->userData['logged'])) {
-            $this->add_alert('warning', 'You must login firstly.');
+            $this->addAlert('warning', 'You must login firstly.');
             redirect(base_url('login'));
         } else {
             $item = $this->db->where('id', $itemId)->get('items')->row();
@@ -51,7 +55,7 @@ class Home extends CI_Controller
             }
             $this->userData['cart'][] = $itemId;
             $this->session->set_userdata('cart', $this->userData['cart']);
-            $this->add_alert('success', 'Product successful added to cart');
+            $this->addAlert('success', 'Product successful added to cart');
             redirect(base_url('cart'));
         }
     }
@@ -66,7 +70,7 @@ class Home extends CI_Controller
         if ($delete) {
             unset($this->userData['cart'][$delete - 1]);
             $this->session->set_userdata('cart', $this->userData['cart']);
-            $this->add_alert('success', 'Successful deleted.');
+            $this->addAlert('success', 'Successful deleted.');
             redirect(base_url('cart'));
         }
 
@@ -174,7 +178,7 @@ class Home extends CI_Controller
         $this->render('register', $viewData);
     }
 
-    private function add_alert($type, $message)
+    private function addAlert($type, $message)
     {
         $alert = ['type' => $type, 'message' => $message];
         $this->session->set_flashdata('alert', $alert);
